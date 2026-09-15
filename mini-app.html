@@ -3,127 +3,163 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mfano wa Telegram Mini App</title>
-
-<!-- Hii ndiyo script MUHIMU inayounganisha ukurasa wako na Telegram -->
+<title>Masomo - Mini App</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-  /* Telegram inatuma "theme colors" za mtumiaji (dark/light mode).
-     Tunazitumia hapa ili app yako ionekane sawa na Telegram yenyewe. */
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 16px;
     background-color: var(--tg-theme-bg-color, #ffffff);
     color: var(--tg-theme-text-color, #000000);
   }
 
-  h1 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
+  h1 { font-size: 20px; margin-bottom: 16px; }
 
-  .card {
+  /* Kadi ya kila somo kwenye orodha */
+  .lesson-item {
     background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-    padding: 16px;
+    padding: 14px;
     border-radius: 12px;
-    margin-bottom: 16px;
-  }
-
-  button {
-    background-color: var(--tg-theme-button-color, #2481cc);
-    color: var(--tg-theme-button-text-color, #ffffff);
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     cursor: pointer;
   }
 
-  #userInfo {
-    font-size: 14px;
-    opacity: 0.8;
+  .lesson-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
   }
+
+  .lesson-item .info { flex: 1; }
+  .lesson-item .title { font-weight: 600; font-size: 15px; }
+  .lesson-item .subtitle { font-size: 13px; opacity: 0.7; }
+
+  /* Ukurasa wa somo moja */
+  #lessonView { display: none; }
+
+  #lessonView img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+
+  #lessonView h2 { font-size: 19px; margin-bottom: 10px; }
+  #lessonView p { font-size: 15px; line-height: 1.6; }
+
+  .hidden { display: none; }
 </style>
 </head>
 <body>
 
-  <h1>👋 Karibu kwenye Mini App yangu</h1>
-
-  <div class="card">
-    <p>Habari, <span id="userName">Mgeni</span>!</p>
-    <p id="userInfo">Taarifa za mtumiaji zitaonekana hapa...</p>
+  <!-- ============================================ -->
+  <!-- UKURASA WA 1: Orodha ya masomo -->
+  <!-- ============================================ -->
+  <div id="lessonList">
+    <h1>📚 Masomo</h1>
+    <div id="listContainer"></div>
   </div>
 
-  <div class="card">
-    <p>Bonyeza kitufe hapa chini kutuma data kwa bot yako:</p>
-    <button id="sendBtn">Tuma Data kwa Bot</button>
+  <!-- ============================================ -->
+  <!-- UKURASA WA 2: Somo moja (linaonekana ukibonyeza) -->
+  <!-- ============================================ -->
+  <div id="lessonView">
+    <img id="lessonImage" src="" alt="Picha ya somo" />
+    <h2 id="lessonTitle"></h2>
+    <p id="lessonContent"></p>
   </div>
 
   <script>
-    // ============================================
-    // HATUA 1: Pata object ya WebApp kutoka Telegram
-    // ============================================
     const tg = window.Telegram.WebApp;
-
-    // Muhimu: Mwambie Telegram kuwa app yako iko tayari
     tg.ready();
-
-    // Panua app ili ichukue nafasi kamili ya skrini
     tg.expand();
 
     // ============================================
-    // HATUA 2: Pata taarifa za mtumiaji
+    // HAPA NDIPO UNAPOONGEZA MASOMO YAKO
     // ============================================
-    // initDataUnsafe ina taarifa za mtumiaji (jina, id, n.k.)
-    // ONYO: hii "unsafe" kwa sababu haijathibitishwa (verified).
-    // Kwa mambo muhimu (kama malipo au data nyeti), lazima
-    // uthibitishe "initData" (si "initDataUnsafe") upande wa SERVER yako.
-    const user = tg.initDataUnsafe?.user;
+    // Kila somo lina: id, title (kichwa), subtitle (maelezo mafupi
+    // kwenye orodha), image (link ya picha), na content (maandishi kamili)
+    const masomo = [
+      {
+        id: 1,
+        title: "Somo la 1: Utangulizi wa Biolojia",
+        subtitle: "Ni nini biolojia na kwa nini tunaisoma",
+        image: "https://placehold.co/600x300?text=Somo+la+1",
+        content: "Biolojia ni sayansi inayosoma viumbe hai na mwingiliano wao na mazingira. " +
+                  "Inatusaidia kuelewa jinsi mwili wa binadamu, wanyama, na mimea vinavyofanya kazi. " +
+                  "Katika somo hili tutaangalia dhana za msingi kabla ya kwenda kwa undani zaidi."
+      },
+      {
+        id: 2,
+        title: "Somo la 2: Seli - Kiini cha Uhai",
+        subtitle: "Aina za seli na kazi zake",
+        image: "https://placehold.co/600x300?text=Somo+la+2",
+        content: "Seli ni kitengo kidogo kabisa cha uhai. Kuna aina mbili kuu za seli: " +
+                  "seli za mimea (zenye ukuta wa seli na kloroplast) na seli za wanyama. " +
+                  "Kila sehemu ya seli (organelle) ina kazi maalum, kama vile kiini (nucleus) " +
+                  "kinachohifadhi taarifa za kijenetiki."
+      },
+      {
+        id: 3,
+        title: "Somo la 3: Mfumo wa Damu",
+        subtitle: "Jinsi moyo na damu vinavyofanya kazi",
+        image: "https://placehold.co/600x300?text=Somo+la+3",
+        content: "Mfumo wa damu (circulatory system) unahusisha moyo, mishipa ya damu, na damu " +
+                  "yenyewe. Moyo husukuma damu yenye oksijeni kwenda kwenye mwili mzima, " +
+                  "na kurudisha damu yenye kaboni dioksidi kwenye mapafu kwa ajili ya kubadilishwa."
+      }
+    ];
 
-    if (user) {
-      document.getElementById("userName").textContent = user.first_name;
-      document.getElementById("userInfo").textContent =
-        `ID: ${user.id} | Username: @${user.username || "haipo"}`;
+    // ============================================
+    // Onyesha orodha ya masomo kwenye ukurasa
+    // ============================================
+    const listContainer = document.getElementById("listContainer");
+
+    masomo.forEach(function (somo) {
+      const item = document.createElement("div");
+      item.className = "lesson-item";
+      item.innerHTML = `
+        <img src="${somo.image}" alt="${somo.title}" />
+        <div class="info">
+          <div class="title">${somo.title}</div>
+          <div class="subtitle">${somo.subtitle}</div>
+        </div>
+      `;
+      // Ukibonyeza somo, fungua ukurasa wa somo hilo
+      item.addEventListener("click", function () {
+        fungualSomo(somo);
+      });
+      listContainer.appendChild(item);
+    });
+
+    // ============================================
+    // Fungua somo moja (badilisha ukurasa)
+    // ============================================
+    function fungualSomo(somo) {
+      document.getElementById("lessonImage").src = somo.image;
+      document.getElementById("lessonTitle").textContent = somo.title;
+      document.getElementById("lessonContent").textContent = somo.content;
+
+      document.getElementById("lessonList").classList.add("hidden");
+      document.getElementById("lessonView").style.display = "block";
+
+      // Onyesha BackButton ya Telegram (chini/juu kulingana na device)
+      tg.BackButton.show();
     }
 
     // ============================================
-    // HATUA 3: Onyesha MainButton ya Telegram
+    // Rudi kwenye orodha ukibonyeza BackButton
     // ============================================
-    // Hii ni kitufe kinachotolewa na Telegram chenyewe (kinabaki
-    // chini ya skrini), tofauti na button ya kawaida ya HTML
-    tg.MainButton.setText("Funga Mini App");
-    tg.MainButton.show();
-
-    tg.MainButton.onClick(function () {
-      tg.close(); // Hufunga Mini App
+    tg.BackButton.onClick(function () {
+      document.getElementById("lessonView").style.display = "none";
+      document.getElementById("lessonList").classList.remove("hidden");
+      tg.BackButton.hide();
     });
-
-    // ============================================
-    // HATUA 4: Tuma data kutoka Mini App kwenda kwa Bot
-    // ============================================
-    document.getElementById("sendBtn").addEventListener("click", function () {
-      // sendData hutuma ujumbe kwa bot yako (backend) kama tukio
-      // Bot yako itapokea hii kama "web_app_data" update
-      tg.sendData(JSON.stringify({
-        action: "salamu",
-        jina: user ? user.first_name : "Mgeni",
-        muda: new Date().toISOString()
-      }));
-    });
-
-    // ============================================
-    // MFANO ZAIDI: Kutumia BackButton
-    // ============================================
-    // tg.BackButton.show();
-    // tg.BackButton.onClick(() => { /* fanya kitu */ });
-
-    // ============================================
-    // MFANO ZAIDI: Kubadilisha rangi ya "header" ya Telegram
-    // ============================================
-    // tg.setHeaderColor('#2481cc');
   </script>
 
 </body>
