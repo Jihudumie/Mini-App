@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Somo la 1: Utangulizi wa Biolojia",
+    "subtitle": "Ni nini biolojia na kwa nini tunaisoma",
+    "image": "https://placehold.co/600x300?text=Somo+la+1",
+    "content": "Biolojia ni sayansi inayosoma viumbe hai na mwingiliano wao na mazingira. Inatusaidia kuelewa jinsi mwili wa binadamu, wanyama, na mimea vinavyofanya kazi. Katika somo hili tutaangalia dhana za msingi kabla ya kwenda kwa undani zaidi."
+  },
+  {
+    "id": 2,
+    "title": "Somo la 2: Seli - Kiini cha Uhai",
+    "subtitle": "Aina za seli na kazi zake",
+    "image": "https://placehold.co/600x300?text=Somo+la+2",
+    "content": "Seli ni kitengo kidogo kabisa cha uhai. Kuna aina mbili kuu za seli: seli za mimea (zenye ukuta wa seli na kloroplast) na seli za wanyama. Kila sehemu ya seli (organelle) ina kazi maalum, kama vile kiini (nucleus) kinachohifadhi taarifa za kijenetiki."
+  },
+  {
+    "id": 3,
+    "title": "Somo la 3: Mfumo wa Damu",
+    "subtitle": "Jinsi moyo na damu vinavyofanya kazi",
+    "image": "https://placehold.co/600x300?text=Somo+la+3",
+    "content": "Mfumo wa damu (circulatory system) unahusisha moyo, mishipa ya damu, na damu yenyewe. Moyo husukuma damu yenye oksijeni kwenda kwenye mwili mzima, na kurudisha damu yenye kaboni dioksidi kwenye mapafu kwa ajili ya kubadilishwa."
+  }
+]
