@@ -65,6 +65,22 @@
     margin: 0 0 10px 0;
   }
 
+  /* Kisanduku maalum kwa Aayah za Qur-aan na Hadiyth */
+  .content-quote {
+    background-color: var(--tg-theme-secondary-bg-color, #f0f4f8);
+    border-left: 4px solid #22a559;
+    padding: 12px 14px;
+    margin: 12px 0;
+    border-radius: 8px;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--tg-theme-text-color, #000000);
+    /* unicode-bidi: plaintext huruhusu Kiarabu (kulia-kushoto) na
+       Kiswahili (kushoto-kulia) kuchanganyika kwa usahihi mstari mmoja */
+    unicode-bidi: plaintext;
+  }
+
   .hidden { display: none; }
 
   /* Ujumbe unaoonekana wakati masomo yanapakuliwa */
@@ -167,6 +183,13 @@
 
         if (mstariUlioSafishwa === "") {
           return; // ruka mistari mitupu
+        }
+
+        // Mstari unaoanza na ">" ni Aayah au Hadiyth - kisanduku maalum
+        if (mstariUlioSafishwa.startsWith(">")) {
+          const bilaAlama = mstariUlioSafishwa.substring(1).trim();
+          html += `<p class="content-quote">${bilaAlama}</p>`;
+          return;
         }
 
         // Angalia kama mstari huu ni HERUFI KUBWA ZOTE (heading)
