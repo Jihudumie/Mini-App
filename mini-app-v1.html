@@ -48,10 +48,21 @@
   }
 
   #lessonView h2 { font-size: 19px; margin-bottom: 10px; }
-  #lessonView p {
+
+  /* Rangi ya mistari yenye HERUFI KUBWA ZOTE (kama FAIDA:, FADHILA ZA SUWRAH:) */
+  .content-heading {
+    color: #22a559; /* kijani */
+    font-weight: 700;
+    font-size: 16px;
+    margin: 18px 0 6px 0;
+  }
+
+  /* Rangi ya maandishi ya kawaida chini ya vichwa */
+  .content-body {
+    color: #1a73e8; /* buluu */
     font-size: 15px;
     line-height: 1.6;
-    white-space: pre-line; /* Hii inafanya \n na \n\n ndani ya content ionekane kama nafasi/aya mpya */
+    margin: 0 0 10px 0;
   }
 
   .hidden { display: none; }
@@ -71,7 +82,7 @@
   <div id="lessonView">
     <img id="lessonImage" src="" alt="Picha ya somo" />
     <h2 id="lessonTitle"></h2>
-    <p id="lessonContent"></p>
+    <div id="lessonContent"></div>
   </div>
 
   <script>
@@ -130,12 +141,47 @@
     function fungualSomo(somo) {
       document.getElementById("lessonImage").src = somo.image;
       document.getElementById("lessonTitle").textContent = somo.title;
-      document.getElementById("lessonContent").textContent = somo.content;
+
+      // Badala ya textContent (maandishi ya kawaida bila rangi),
+      // tunatumia innerHTML pamoja na function inayotambua vichwa
+      document.getElementById("lessonContent").innerHTML = pangaRangiYaContent(somo.content);
 
       document.getElementById("lessonList").classList.add("hidden");
       document.getElementById("lessonView").style.display = "block";
 
       tg.BackButton.show();
+    }
+
+    // ============================================
+    // Function hii inasoma content mstari kwa mstari.
+    // Ikiwa mstari umeandikwa kwa HERUFI KUBWA ZOTE (kama "FAIDA:"),
+    // unapewa class ya "content-heading" (kijani).
+    // Mistari mingine yote inapewa class ya "content-body" (buluu).
+    // ============================================
+    function pangaRangiYaContent(text) {
+      const mistari = text.split("\n");
+      let html = "";
+
+      mistari.forEach(function (mstari) {
+        const mstariUlioSafishwa = mstari.trim();
+
+        if (mstariUlioSafishwa === "") {
+          return; // ruka mistari mitupu
+        }
+
+        // Angalia kama mstari huu ni HERUFI KUBWA ZOTE (heading)
+        // Mfano: "FAIDA:" au "FADHILA ZA SUWRAH:"
+        const niHeading = mstariUlioSafishwa === mstariUlioSafishwa.toUpperCase()
+                          && /[A-Z]/.test(mstariUlioSafishwa);
+
+        if (niHeading) {
+          html += `<p class="content-heading">${mstariUlioSafishwa}</p>`;
+        } else {
+          html += `<p class="content-body">${mstariUlioSafishwa}</p>`;
+        }
+      });
+
+      return html;
     }
 
     tg.BackButton.onClick(function () {
