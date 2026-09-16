@@ -17,7 +17,6 @@
 
   h1 { font-size: 20px; margin-bottom: 16px; }
 
-  /* Kadi ya kila somo kwenye orodha */
   .lesson-item {
     background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
     padding: 14px;
@@ -40,7 +39,6 @@
   .lesson-item .title { font-weight: 600; font-size: 15px; }
   .lesson-item .subtitle { font-size: 13px; opacity: 0.7; }
 
-  /* Ukurasa wa somo moja */
   #lessonView { display: none; }
 
   #lessonView img {
@@ -53,21 +51,19 @@
   #lessonView p { font-size: 15px; line-height: 1.6; }
 
   .hidden { display: none; }
+
+  /* Ujumbe unaoonekana wakati masomo yanapakuliwa */
+  #loadingMsg { text-align: center; opacity: 0.6; padding: 20px; }
 </style>
 </head>
 <body>
 
-  <!-- ============================================ -->
-  <!-- UKURASA WA 1: Orodha ya masomo -->
-  <!-- ============================================ -->
   <div id="lessonList">
     <h1>📚 Masomo</h1>
+    <div id="loadingMsg">Inapakia masomo...</div>
     <div id="listContainer"></div>
   </div>
 
-  <!-- ============================================ -->
-  <!-- UKURASA WA 2: Somo moja (linaonekana ukibonyeza) -->
-  <!-- ============================================ -->
   <div id="lessonView">
     <img id="lessonImage" src="" alt="Picha ya somo" />
     <h2 id="lessonTitle"></h2>
@@ -79,63 +75,50 @@
     tg.ready();
     tg.expand();
 
+    const listContainer = document.getElementById("listContainer");
+    const loadingMsg = document.getElementById("loadingMsg");
+
     // ============================================
-    // HAPA NDIPO UNAPOONGEZA MASOMO YAKO
+    // HAPA NDIYO MABADILIKO MUHIMU:
+    // Badala ya kuandika masomo ndani ya JS, tunayasoma
+    // kutoka faili la nje "masomo.json" kwa kutumia fetch()
     // ============================================
-    // Kila somo lina: id, title (kichwa), subtitle (maelezo mafupi
-    // kwenye orodha), image (link ya picha), na content (maandishi kamili)
-    const masomo = [
-      {
-        id: 1,
-        title: "Somo la 1: Utangulizi wa Biolojia",
-        subtitle: "Ni nini biolojia na kwa nini tunaisoma",
-        image: "https://placehold.co/600x300?text=Somo+la+1",
-        content: "Biolojia ni sayansi inayosoma viumbe hai na mwingiliano wao na mazingira. " +
-                  "Inatusaidia kuelewa jinsi mwili wa binadamu, wanyama, na mimea vinavyofanya kazi. " +
-                  "Katika somo hili tutaangalia dhana za msingi kabla ya kwenda kwa undani zaidi."
-      },
-      {
-        id: 2,
-        title: "Somo la 2: Seli - Kiini cha Uhai",
-        subtitle: "Aina za seli na kazi zake",
-        image: "https://placehold.co/600x300?text=Somo+la+2",
-        content: "Seli ni kitengo kidogo kabisa cha uhai. Kuna aina mbili kuu za seli: " +
-                  "seli za mimea (zenye ukuta wa seli na kloroplast) na seli za wanyama. " +
-                  "Kila sehemu ya seli (organelle) ina kazi maalum, kama vile kiini (nucleus) " +
-                  "kinachohifadhi taarifa za kijenetiki."
-      },
-      {
-        id: 3,
-        title: "Somo la 3: Mfumo wa Damu",
-        subtitle: "Jinsi moyo na damu vinavyofanya kazi",
-        image: "https://placehold.co/600x300?text=Somo+la+3",
-        content: "Mfumo wa damu (circulatory system) unahusisha moyo, mishipa ya damu, na damu " +
-                  "yenyewe. Moyo husukuma damu yenye oksijeni kwenda kwenye mwili mzima, " +
-                  "na kurudisha damu yenye kaboni dioksidi kwenye mapafu kwa ajili ya kubadilishwa."
-      }
-    ];
+    fetch("masomo.json")
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Imeshindwa kupakia masomo.json");
+        }
+        return response.json();
+      })
+      .then(function (masomo) {
+        loadingMsg.style.display = "none";
+        onyeshaOrodha(masomo);
+      })
+      .catch(function (error) {
+        loadingMsg.textContent = "Samahani, imeshindwa kupakia masomo. Jaribu tena baadaye.";
+        console.error(error);
+      });
 
     // ============================================
     // Onyesha orodha ya masomo kwenye ukurasa
     // ============================================
-    const listContainer = document.getElementById("listContainer");
-
-    masomo.forEach(function (somo) {
-      const item = document.createElement("div");
-      item.className = "lesson-item";
-      item.innerHTML = `
-        <img src="${somo.image}" alt="${somo.title}" />
-        <div class="info">
-          <div class="title">${somo.title}</div>
-          <div class="subtitle">${somo.subtitle}</div>
-        </div>
-      `;
-      // Ukibonyeza somo, fungua ukurasa wa somo hilo
-      item.addEventListener("click", function () {
-        fungualSomo(somo);
+    function onyeshaOrodha(masomo) {
+      masomo.forEach(function (somo) {
+        const item = document.createElement("div");
+        item.className = "lesson-item";
+        item.innerHTML = `
+          <img src="${somo.image}" alt="${somo.title}" />
+          <div class="info">
+            <div class="title">${somo.title}</div>
+            <div class="subtitle">${somo.subtitle}</div>
+          </div>
+        `;
+        item.addEventListener("click", function () {
+          fungualSomo(somo);
+        });
+        listContainer.appendChild(item);
       });
-      listContainer.appendChild(item);
-    });
+    }
 
     // ============================================
     // Fungua somo moja (badilisha ukurasa)
@@ -148,13 +131,9 @@
       document.getElementById("lessonList").classList.add("hidden");
       document.getElementById("lessonView").style.display = "block";
 
-      // Onyesha BackButton ya Telegram (chini/juu kulingana na device)
       tg.BackButton.show();
     }
 
-    // ============================================
-    // Rudi kwenye orodha ukibonyeza BackButton
-    // ============================================
     tg.BackButton.onClick(function () {
       document.getElementById("lessonView").style.display = "none";
       document.getElementById("lessonList").classList.remove("hidden");
