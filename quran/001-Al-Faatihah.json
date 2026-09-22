@@ -5,7 +5,7 @@
   "arabic_name": "الْفَاتِحَة",
   "revelation": "Makkah",
   "ayah_count": 7,
-  "verses": [
+  "content": [
     {"number": 1, "arabic": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", "translation": "Kwa Jina la Allaah Ar-Rahmaan, Ar-Rahiym."},
     {"number": 2, "arabic": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "translation": "AlhamduliLlaah, Rabb wa walimwengu."},
     {"number": 3, "arabic": "الرَّحْمَنِ الرَّحِيمِ", "translation": "Mwingi wa Rehma, Mwenye Kurehemu."},
