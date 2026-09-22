@@ -137,15 +137,30 @@
     });
   }
 
-  function funguaSomo(somo) {
+  async function funguaSomo(somo) {
     document.getElementById("lessonImage").src = somo.image || "";
     document.getElementById("lessonTitle").textContent = somo.title || "";
     document.getElementById("lessonMeta").textContent = somo.subtitle || somo.category || "";
-    document.getElementById("lessonContent").innerHTML = pangaRangiYaContent(somo.content || "");
+    document.getElementById("lessonContent").innerHTML = "<p class=\"content-body\">Inapakia...</p>";
     document.getElementById("lessonList").classList.add("hidden");
     document.getElementById("lessonView").style.display = "block";
     tg.BackButton.show();
     window.scrollTo(0, 0);
+
+    let content = somo.content || "";
+    if (!content && somo.file) {
+      try {
+        const res = await fetch(somo.file);
+        if (!res.ok) throw new Error("Imeshindwa kupakia " + somo.file);
+        const data = await res.json();
+        content = data.content || "";
+      } catch (error) {
+        console.error(error);
+        document.getElementById("lessonContent").innerHTML = "<p class=\"content-body\">Samahani, imeshindwa kupakia somo hili.</p>";
+        return;
+      }
+    }
+    document.getElementById("lessonContent").innerHTML = pangaRangiYaContent(content);
   }
 
   function rudiOrodhani() {
